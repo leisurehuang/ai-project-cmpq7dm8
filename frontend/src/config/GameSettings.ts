@@ -1,0 +1,1 @@
+// GameSettings.ts - 游戏核心数值配置
