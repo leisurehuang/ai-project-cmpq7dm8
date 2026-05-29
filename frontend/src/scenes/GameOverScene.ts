@@ -1,0 +1,1 @@
+// GameOverScene.ts - 结算场景
