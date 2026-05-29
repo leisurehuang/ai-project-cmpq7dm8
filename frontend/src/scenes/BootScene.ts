@@ -1,0 +1,1 @@
+// BootScene.ts - 加载场景
