@@ -1,0 +1,26 @@
+/* 全局重置与基础布局 */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000000; /* 严格黑色背景 */
+  overflow: hidden; /* 防止出现滚动条 */
+  font-family: monospace; /* 复古像素风字体 */
+}
+
+/* 游戏容器居中对齐 */
+#game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* 确保 Phaser 自动生成的 canvas 标签也保持块级和像素完美 */
+#game-container canvas {
+  display: block;
+  image-rendering: pixelated; /* 强制浏览器以像素对齐方式缩放图像 */
+  image-rendering: crisp-edges;
+}
