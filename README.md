@@ -1,6 +1,6 @@
 # ai-project-cmpq7dm8
 
-> 打蜜蜂 - AI-generated project (54 files)
+> 打蜜蜂 - AI-generated project (40 files)
 
 ## 🤖 项目说明
 
@@ -29,10 +29,7 @@
   frontend/package.json
   frontend/public/assets/README.md
   frontend/src/config/AssetKeys.ts
-  frontend/src/config/AssetKeys.ts
   frontend/src/config/GameConfig.ts
-  frontend/src/config/GameConfig.ts
-  frontend/src/config/GameSettings.ts
   frontend/src/config/GameSettings.ts
   frontend/src/data/interfaces/IEnemyState.ts
   frontend/src/data/interfaces/IPersistedState.ts
@@ -40,31 +37,20 @@
   frontend/src/data/repositories/StorageRepository.ts
   frontend/src/entities/Bullet.ts
   frontend/src/entities/Enemy.ts
-  frontend/src/entities/Enemy.ts
   frontend/src/entities/Player.ts
-  frontend/src/entities/Player.ts
-  frontend/src/main.ts
   frontend/src/main.ts
   frontend/src/managers/EventBus.ts
   frontend/src/managers/GameManager.ts
   frontend/src/scenes/BootScene.ts
-  frontend/src/scenes/BootScene.ts
-  frontend/src/scenes/GameOverScene.ts
   frontend/src/scenes/GameOverScene.ts
   frontend/src/scenes/MainScene.ts
-  frontend/src/scenes/MainScene.ts
-  frontend/src/scenes/MenuScene.ts
   frontend/src/scenes/MenuScene.ts
   frontend/src/style.css
   frontend/src/styles/index.css
   frontend/src/styles/theme.css
   frontend/src/systems/CollisionSystem.ts
-  frontend/src/systems/CollisionSystem.ts
-  frontend/src/systems/EnemySwarm.ts
   frontend/src/systems/EnemySwarm.ts
   frontend/src/systems/ScoreManager.ts
-  frontend/src/systems/ScoreManager.ts
-  frontend/src/ui/Hud.ts
   frontend/src/ui/Hud.ts
   frontend/tsconfig.json
   frontend/tsconfig.node.json
