@@ -1,0 +1,1 @@
+// ScoreManager.ts - 计分与本地存储系统
