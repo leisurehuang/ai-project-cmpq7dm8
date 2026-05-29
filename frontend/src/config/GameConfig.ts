@@ -1,0 +1,1 @@
+// GameConfig.ts - 游戏核心配置
