@@ -1,0 +1,23 @@
+/* 根元素 CSS 变量 - 复古像素街机配色方案 */
+:root {
+  /* 背景色 */
+  --color-bg-dark: #111111;
+  --color-bg-main: #000000;
+
+  /* 文本色 */
+  --color-text-primary: #ffffff;
+  --color-text-highlight: #00ff00; /* 霓虹绿 */
+  --color-text-danger: #ff0000;    /* 警示红 */
+  --color-text-info: #00ffff;    /* 冰蓝 */
+  --color-text-gold: #ffd700;    /* 金色(用于高分) */
+
+  /* 字体 */
+  --font-primary: 'Press Start 2P', 'Courier New', monospace;
+
+  /* 游戏画布边框 */
+  --border-arcade: 4px solid #333;
+  --box-shadow-arcade: 0 0 20px rgba(0, 255, 0, 0.2);
+}
+
+/* 引入像素字体 (如果网络可用) */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
