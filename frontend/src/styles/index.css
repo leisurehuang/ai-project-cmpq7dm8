@@ -1,0 +1,34 @@
+@import './theme.css';
+
+/* 重置与基础布局 */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-bg-dark);
+  overflow: hidden; /* 防止出现滚动条 */
+  font-family: var(--font-primary);
+}
+
+/* 游戏容器居中对齐 */
+#game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--color-bg-main);
+}
+
+/* 确保 Phaser 自动生成的 canvas 标签保持块级和像素完美 */
+#game-container canvas {
+  display: block;
+  /* 核心规则：强制浏览器关闭抗锯齿，实现锐利的像素边缘 */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  
+  /* 视觉包装：模拟街机屏幕边框发光效果 */
+  border: var(--border-arcade);
+  box-shadow: var(--box-shadow-arcade);
+}
