@@ -1,10 +1,11 @@
 import Phaser from 'phaser';
-import Enemy from '../entities/Enemy';
-import { EnemyType } from '../data/interfaces/IEnemyState';
+import Enemy, { EnemyState, EnemyType } from '../entities/Enemy';
+import { Images } from '../config/AssetKeys';
 
 export default class EnemySwarm {
   private scene: Phaser.Scene;
   private enemies: Enemy[];
+  private enemyGroup: Phaser.Physics.Arcade.Group;
   
   // 阵列运动参数
   private swarmSpeed: number = 30; // 初始平移速度
@@ -15,6 +16,7 @@ export default class EnemySwarm {
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.enemies = [];
+    this.enemyGroup = scene.physics.add.group();
   }
 
   /**
@@ -26,6 +28,13 @@ export default class EnemySwarm {
     const spacingX = 48;
     const spacingY = 40;
 
+    // 纹理映射：敌机类型 -> 资源 Key
+    const textureMap: Record<number, string> = {
+      [EnemyType.BEE]: Images.ENEMY_BEE,
+      [EnemyType.BUTTERFLY]: Images.ENEMY_BUTTERFLY,
+      [EnemyType.BOSS]: Images.ENEMY_BOSS,
+    };
+
     // 阵型布局：顶层蜜蜂，中层蝴蝶，底层Boss
     const layout = [
       { type: EnemyType.BEE, rows: 2, cols: 10, points: 50 },
@@ -33,16 +42,26 @@ export default class EnemySwarm {
       { type: EnemyType.BOSS, rows: 1, cols: 6, points: 150 }
     ];
 
+    // 使用 currentRow 追踪全局行号，避免不同种类敌机层级错乱
+    let currentRow = 0;
     layout.forEach(layer => {
       for (let r = 0; r < layer.rows; r++) {
         for (let c = 0; c < layer.cols; c++) {
           const x = startX + c * spacingX;
-          const y = startY + this.enemies.length * spacingY; // 简化行计算
+          const y = startY + currentRow * spacingY;
           
-          // 实际开发中会实例化具体的 Enemy 对象并加入物理组
-          // const enemy = new Enemy(this.scene, x, y, layer.type, layer.points);
-          // this.enemies.push(enemy);
+          const enemy = new Enemy(
+            this.scene,
+            x,
+            y,
+            textureMap[layer.type],
+            layer.type,
+            layer.points
+          );
+          this.enemies.push(enemy);
+          this.enemyGroup.add(enemy);
         }
+        currentRow++;
       }
     });
   }
@@ -53,9 +72,10 @@ export default class EnemySwarm {
    */
   public update(delta: number): void {
     let hitEdge = false;
+    const playerX = this.scene.cameras.main.width / 2; // 简化：使用屏幕中心作为俯冲目标
 
     this.enemies.forEach(enemy => {
-      if (enemy.isActive() && !enemy.isDiving()) {
+      if (enemy.active && enemy.state !== EnemyState.DIVING) {
         // 1. 水平平移
         enemy.x += this.direction * (this.swarmSpeed / 1000) * delta;
         
@@ -66,19 +86,16 @@ export default class EnemySwarm {
 
         // 3. 随机俯冲判定
         if (Phaser.Math.FloatBetween(0, 1) < this.diveProbability) {
-          enemy.startDive();
+          enemy.startDive(playerX);
         }
       }
-      
-      // 更新敌机自身逻辑
-      enemy.update(delta);
     });
 
     // 整体下压逻辑
     if (hitEdge) {
       this.direction = this.direction === 1 ? -1 : 1;
       this.enemies.forEach(enemy => {
-        if (!enemy.isDiving()) {
+        if (enemy.state !== EnemyState.DIVING) {
           enemy.y += this.dropDistance;
         }
       });
@@ -95,6 +112,13 @@ export default class EnemySwarm {
   }
   
   public getActiveCount(): number {
-    return this.enemies.filter(e => e.isActive()).length;
+    return this.enemies.filter(e => e.active).length;
+  }
+
+  /**
+   * 获取敌机物理组，用于碰撞检测注册
+   */
+  public getEnemyGroup(): Phaser.Physics.Arcade.Group {
+    return this.enemyGroup;
   }
 }
