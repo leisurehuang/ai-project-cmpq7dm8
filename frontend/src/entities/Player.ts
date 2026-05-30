@@ -37,7 +37,7 @@ export default class Player {
     if (!this.sprite.active) return;
 
     // 1. 水平移动控制
-    const speed = GameSettings.PLAYER_SPEED * (delta / 1000);
+    // Arcade 物理的 setVelocityX 期望像素/秒，直接使用 GameSettings.PLAYER_SPEED
     if (this.cursors.left.isDown) {
       this.sprite.setVelocityX(-GameSettings.PLAYER_SPEED);
     } else if (this.cursors.right.isDown) {
