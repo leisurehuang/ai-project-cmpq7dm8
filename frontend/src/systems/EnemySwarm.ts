@@ -110,15 +110,34 @@ export default class EnemySwarm {
     this.swarmSpeed = 30 + (level * 10);
     this.diveProbability = 0.002 + (level * 0.0005);
   }
-  
-  public getActiveCount(): number {
-    return this.enemies.filter(e => e.active).length;
-  }
 
   /**
-   * 获取敌机物理组，用于碰撞检测注册
+   * 获取敌机物理组（供碰撞系统注册 overlap 使用）
    */
   public getEnemyGroup(): Phaser.Physics.Arcade.Group {
     return this.enemyGroup;
+  }
+
+  /**
+   * 获取当前存活的敌机数量
+   */
+  public getActiveCount(): number {
+    return this.enemyGroup.getTotalActive();
+  }
+
+  /**
+   * 清除当前阵型中所有敌机，为下一波做准备
+   */
+  public clearFormation(): void {
+    // 销毁所有现存敌机
+    this.enemies.forEach(enemy => {
+      if (enemy.active) {
+        enemy.destroy();
+      }
+    });
+    this.enemies = [];
+
+    // 重置移动方向
+    this.direction = 1;
   }
 }
