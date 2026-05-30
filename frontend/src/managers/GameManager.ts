@@ -1,5 +1,4 @@
 import ScoreManager from '../systems/ScoreManager';
-import StorageRepository from '../data/repositories/StorageRepository';
 
 /**
  * 游戏全局管理器
