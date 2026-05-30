@@ -9,6 +9,9 @@ export class MenuScene extends Phaser.Scene {
 
   create(): void {
     const { width, height } = this.cameras.main;
+    
+    // 清除可能存在的旧UI回调，防止在菜单界面触发游戏UI更新
+    GameManager.scoreManager.onUpdate = null;
 
     // 标题
     this.add.text(width / 2, height / 2 - 100, '太 空 侵 略 者', {
@@ -43,9 +46,9 @@ export class MenuScene extends Phaser.Scene {
 
     // 监听空格键切换到主场景
     this.input.keyboard.once('keydown-SPACE', () => {
-      // 启动或恢复背景音乐
+      // 启动背景音乐
       if (!this.sound.get(Audio.BGM_THEME)?.isPlaying) {
-        const bgm = this.sound.add(Audio.BGM_THEME, { loop: true, volume: 0.5 });
+        const bgm = this.sound.add(Audio.BGM_THEME, { loop: true, volume: 0.3 });
         bgm.play();
       }
       GameManager.startNewGame();

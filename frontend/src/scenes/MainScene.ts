@@ -12,7 +12,6 @@ export class MainScene extends Phaser.Scene {
   private enemySwarm!: EnemySwarm;
   private collisionSystem!: CollisionSystem;
   private hud!: Hud;
-  private enemyBullets!: Phaser.Physics.Arcade.Group;
   private isGameOver!: boolean;
 
   constructor() {
@@ -21,9 +20,6 @@ export class MainScene extends Phaser.Scene {
 
   create(): void {
     this.isGameOver = false;
-    
-    // 初始化物理组
-    this.enemyBullets = this.physics.add.group();
 
     // 实例化核心实体
     this.player = new Player(this, this.cameras.main.width / 2, this.cameras.main.height - 50);
@@ -39,22 +35,24 @@ export class MainScene extends Phaser.Scene {
     this.collisionSystem.addPlayerBulletEnemyOverlap(
       this.player.getBullets(),
       this.enemySwarm.getEnemyGroup(),
-      this.hitEnemy,
-      this
+      (_bullet: any, _enemy: any) => this.hitEnemy(_bullet, _enemy)
     );
 
     this.collisionSystem.addEnemyPlayerOverlap(
       this.player.getSprite(),
       this.enemySwarm.getEnemyGroup(),
-      this.hitPlayer,
-      this
+      (_player: any, _enemy: any) => this.hitPlayer(_player, _enemy)
     );
 
-    // 注册积分管理器回调
-    GameManager.scoreManager.onUpdate = (score, lives) => {
-      this.hud.updateDisplay(score, lives);
-    };
-    this.hud.updateDisplay(GameManager.scoreManager.getScore(), GameSettings.INITIAL_LIVES);
+    // 等待下一帧再设置回调，确保所有纹理都已加载
+    this.events.once('update', () => {
+      // 注册积分管理器回调
+      GameManager.scoreManager.onUpdate = (score, lives) => {
+        this.hud.updateDisplay(score, lives);
+      };
+      // 初始化显示
+      this.hud.updateDisplay(GameManager.scoreManager.getScore(), GameSettings.INITIAL_LIVES);
+    });
   }
 
   update(_time: number, delta: number): void {
@@ -122,9 +120,20 @@ export class MainScene extends Phaser.Scene {
     this.player.die();
     this.physics.pause(); // 暂停所有物理活动
     
+    // 清除UI更新回调，防止内存泄漏
+    GameManager.scoreManager.onUpdate = null;
+    
     // 延迟跳转结算场景
     this.time.delayedCall(1500, () => {
       this.scene.start('GameOverScene');
     });
+  }
+
+  /**
+   * 场景关闭时的清理工作
+   */
+  shutdown(): void {
+    // 清除UI更新回调
+    GameManager.scoreManager.onUpdate = null;
   }
 }

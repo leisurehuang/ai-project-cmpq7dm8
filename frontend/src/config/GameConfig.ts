@@ -21,7 +21,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { y: 0 }, // 俯视视角，无需重力
+      gravity: { x: 0, y: 0 }, // 俯视视角，无需重力
       debug: false // 生产环境关闭调试边框
     }
   },

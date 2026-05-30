@@ -42,10 +42,10 @@ export class BootScene extends Phaser.Scene {
     this.load.image(Images.ENEMY_BUTTERFLY, 'assets/sprites/enemy_butterfly.png');
     this.load.image(Images.ENEMY_BOSS, 'assets/sprites/enemy_boss.png');
 
-    // 8-bit 音效资源
-    this.load.audio(Audio.BGM_THEME, ['assets/audio/bgm_theme.mp3', 'assets/audio/bgm_theme.ogg']);
+    // 音效资源 - 使用高质量音效
+    this.load.audio(Audio.BGM_THEME, 'assets/audio/bgm_theme.ogg');
     this.load.audio(Audio.SFX_SHOOT, 'assets/audio/shoot.mp3');
-    this.load.audio(Audio.SFX_EXPLOSION_ENEMY, 'assets/audio/explosion_enemy.mp3');
-    this.load.audio(Audio.SFX_EXPLOSION_PLAYER, 'assets/audio/explosion_player.mp3');
+    this.load.audio(Audio.SFX_EXPLOSION_ENEMY, 'assets/audio/explosion_enemy.wav');
+    this.load.audio(Audio.SFX_EXPLOSION_PLAYER, 'assets/audio/explosion_player.wav');
   }
 }

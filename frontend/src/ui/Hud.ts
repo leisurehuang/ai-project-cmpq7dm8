@@ -8,6 +8,7 @@ export default class Hud {
   private highScoreText: Phaser.GameObjects.Text;
   private levelText: Phaser.GameObjects.Text;
   private livesGroup: Phaser.GameObjects.Group;
+  private isDestroyed: boolean = false;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -29,13 +30,16 @@ export default class Hud {
 
     // 底部生命值图标
     this.livesGroup = scene.add.group();
-    this.drawLives(3); // 初始绘制
+    // 不在构造函数中绘制生命值，等待updateDisplay调用
   }
 
   /**
    * 刷新界面显示
    */
   public updateDisplay(score: number, lives: number): void {
+    // 检查对象是否已被销毁或场景是否无效
+    if (this.isDestroyed || !this.scene || !this.scene.sys) return;
+    
     this.scoreText.setText(`SCORE: ${score}`);
     this.levelText.setText(`WAVE ${GameManager.currentLevel}`);
     
@@ -51,6 +55,11 @@ export default class Hud {
    * 绘制生命值图标
    */
   private drawLives(lives: number): void {
+    // 检查场景和纹理是否可用
+    if (!this.scene || !this.scene.textures.exists(Images.PLAYER_SHIP)) {
+      return;
+    }
+    
     this.livesGroup.clear(true, true); // 清除旧图标
 
     // 在左下角绘制剩余的小飞船
@@ -62,5 +71,18 @@ export default class Hud {
         .setScale(0.8)
         .setAlpha(0.8);
     }
+  }
+
+  /**
+   * 销毁Hud对象
+   */
+  public destroy(): void {
+    this.isDestroyed = true;
+    
+    // 清理所有创建的游戏对象
+    if (this.scoreText) this.scoreText.destroy();
+    if (this.levelText) this.levelText.destroy();
+    if (this.highScoreText) this.highScoreText.destroy();
+    if (this.livesGroup) this.livesGroup.clear(true, true);
   }
 }

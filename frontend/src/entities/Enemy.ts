@@ -53,7 +53,10 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
       duration: 1500,
       ease: 'Sine.easeIn',
       onComplete: () => {
-        this.returnToFormation();
+        // 检查对象是否仍然有效（未被销毁）
+        if (this.scene && this.scene.tweens) {
+          this.returnToFormation();
+        }
       }
     });
   }
@@ -62,6 +65,9 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
    * 俯冲结束后（飞出屏幕底端），回到阵型顶部重新出现
    */
   private returnToFormation(): void {
+    // 检查对象是否仍然有效（未被销毁）
+    if (!this.scene || !this.scene.tweens) return;
+    
     // 从屏幕顶部重新出现
     this.y = -20;
     
@@ -72,8 +78,24 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
       duration: 1000,
       ease: 'Linear',
       onComplete: () => {
-        this.state = EnemyState.FORMATION;
+        // 再次检查有效性
+        if (this.scene) {
+          this.state = EnemyState.FORMATION;
+        }
       }
     });
+  }
+
+  /**
+   * 重写销毁方法，清理所有正在进行的tween
+   */
+  public destroy(): void {
+    // 取消所有正在进行的tween
+    if (this.scene && this.scene.tweens) {
+      this.scene.tweens.killTweensOf(this);
+    }
+    
+    // 调用父类的销毁方法
+    super.destroy();
   }
 }

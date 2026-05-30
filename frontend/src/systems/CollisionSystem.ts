@@ -18,7 +18,13 @@ export default class CollisionSystem {
     enemies: Phaser.Physics.Arcade.Group,
     callback: (bullet: Phaser.GameObjects.GameObject, enemy: Phaser.GameObjects.GameObject) => void
   ) {
-    this.scene.physics.add.overlap(playerBullets, enemies, callback, undefined, this.scene);
+    this.scene.physics.add.overlap(
+      playerBullets,
+      enemies,
+      callback as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+      undefined,
+      this.scene
+    );
   }
 
   /**
@@ -28,10 +34,16 @@ export default class CollisionSystem {
    * @param callback 碰撞发生时的回调函数
    */
   public addEnemyPlayerOverlap(
-    player: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Physics.Arcade.StaticGroup,
+    player: any,
     enemyObjects: Phaser.Physics.Arcade.Group,
     callback: (playerObj: Phaser.GameObjects.GameObject, enemyObj: Phaser.GameObjects.GameObject) => void
   ) {
-    this.scene.physics.add.overlap(player, enemyObjects, callback, undefined, this.scene);
+    this.scene.physics.add.overlap(
+      player,
+      enemyObjects,
+      callback as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+      undefined,
+      this.scene
+    );
   }
 }
