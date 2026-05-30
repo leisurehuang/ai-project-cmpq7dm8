@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { Images } from '../config/AssetKeys';
 
 export enum EnemyState { FORMATION, DIVING }
 export enum EnemyType { BEE, BUTTERFLY, BOSS }
@@ -40,6 +39,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     if (this.state === EnemyState.DIVING) return;
     
     this.state = EnemyState.DIVING;
+    this.saveFormationPosition();
     
     // 计算一个简单的俯冲路径：向下并朝向玩家当前X坐标
     const targetX = playerX;
