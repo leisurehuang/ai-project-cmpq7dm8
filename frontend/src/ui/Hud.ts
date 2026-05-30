@@ -29,7 +29,7 @@ export default class Hud {
 
     // 底部生命值图标
     this.livesGroup = scene.add.group();
-    this.drawLives(GameManager.scoreManager.getScore(), 3); // 初始绘制
+    this.drawLives(3); // 初始绘制
   }
 
   /**
@@ -44,13 +44,13 @@ export default class Hud {
       this.highScoreText.setText(`HI: ${score}`);
     }
 
-    this.drawLives(score, lives);
+    this.drawLives(lives);
   }
 
   /**
    * 绘制生命值图标
    */
-  private drawLives(score: number, lives: number): void {
+  private drawLives(lives: number): void {
     this.livesGroup.clear(true, true); // 清除旧图标
 
     // 在左下角绘制剩余的小飞船
