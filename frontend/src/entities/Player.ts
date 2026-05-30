@@ -6,8 +6,8 @@ export default class Player {
   private scene: Phaser.Scene;
   private sprite: Phaser.Physics.Arcade.Sprite;
   private bullets: Phaser.Physics.Arcade.Group;
-  private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-  private spaceKey: Phaser.Input.Keyboard.Key;
+  private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
+  private spaceKey?: Phaser.Input.Keyboard.Key;
   private isInvincibleFlag: boolean = false;
   private lastShotTime: number = 0;
 
@@ -35,6 +35,9 @@ export default class Player {
 
   public update(delta: number): void {
     if (!this.sprite.active) return;
+
+    // 防御性判断：在无键盘环境（如嵌入式/禁用键盘API）下直接返回，避免空指针崩溃
+    if (!this.cursors || !this.spaceKey) return;
 
     // 1. 水平移动控制
     // Arcade 物理的 setVelocityX 期望像素/秒，直接使用 GameSettings.PLAYER_SPEED
