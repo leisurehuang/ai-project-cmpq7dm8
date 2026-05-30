@@ -14,6 +14,8 @@ export class MainScene extends Phaser.Scene {
   private hud!: Hud;
   private enemyBullets!: Phaser.Physics.Arcade.Group;
   private isGameOver!: boolean;
+  private isTransitioning: boolean = false;
+  private currentLives: number = GameSettings.INITIAL_LIVES;
 
   constructor() {
     super({ key: 'MainScene' });
@@ -21,6 +23,7 @@ export class MainScene extends Phaser.Scene {
 
   create(): void {
     this.isGameOver = false;
+    this.isTransitioning = false;
     
     // 初始化物理组
     this.enemyBullets = this.physics.add.group();
@@ -52,8 +55,10 @@ export class MainScene extends Phaser.Scene {
 
     // 注册积分管理器回调
     GameManager.scoreManager.onUpdate = (score, lives) => {
+      this.currentLives = lives;
       this.hud.updateDisplay(score, lives);
     };
+    this.currentLives = GameSettings.INITIAL_LIVES;
     this.hud.updateDisplay(GameManager.scoreManager.getScore(), GameSettings.INITIAL_LIVES);
   }
 
@@ -63,8 +68,8 @@ export class MainScene extends Phaser.Scene {
     this.player.update(delta);
     this.enemySwarm.update(delta);
 
-    // 检查是否通关
-    if (this.enemySwarm.getActiveCount() === 0) {
+    // 检查是否通关（所有敌机被消灭后推进到下一波）
+    if (!this.isTransitioning && this.enemySwarm.getActiveCount() === 0) {
       this.nextLevel();
     }
   }
@@ -105,25 +110,36 @@ export class MainScene extends Phaser.Scene {
   }
 
   /**
-   * 通关逻辑
+   * 通关逻辑：敌机全灭后推进关卡、重新生成阵型并提升难度
    */
   private nextLevel(): void {
+    this.isTransitioning = true;
+
+    // 推进关卡等级
     GameManager.advanceLevel();
+
+    // 清除旧阵型
+    this.enemySwarm.clearFormation();
+
+    // 提升难度并生成新波次
     this.enemySwarm.increaseDifficulty(GameManager.currentLevel);
-    // 重新生成阵型
     this.enemySwarm.createFormation();
+
+    // 刷新 HUD 显示（关卡波次由 updateDisplay 内部通过 GameManager.currentLevel 读取）
+    this.hud.updateDisplay(GameManager.scoreManager.getScore(), this.currentLives);
+
+    this.isTransitioning = false;
   }
 
   /**
-   * 游戏结束
+   * 游戏结束逻辑
    */
   private gameOver(): void {
     this.isGameOver = true;
     this.player.die();
-    this.physics.pause(); // 暂停所有物理活动
-    
-    // 延迟跳转结算场景
-    this.time.delayedCall(1500, () => {
+
+    // 延迟切换到游戏结束场景，让玩家看到爆炸效果
+    this.time.delayedCall(1000, () => {
       this.scene.start('GameOverScene');
     });
   }
