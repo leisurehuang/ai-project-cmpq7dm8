@@ -23,6 +23,13 @@ export default class EnemySwarm {
    * 生成初始敌机阵列
    */
   public createFormation(): void {
+    // 清理上一波残留的敌机（支持关卡流转时重新生成）
+    this.enemies.forEach(e => {
+      if (e && e.active) e.destroy();
+    });
+    this.enemies = [];
+    this.enemyGroup.clear(true, true);
+
     const startX = 100;
     const startY = 80;
     const spacingX = 48;
@@ -112,32 +119,16 @@ export default class EnemySwarm {
   }
 
   /**
-   * 获取敌机物理组（供碰撞系统注册 overlap 使用）
+   * 获取敌机物理组，供碰撞系统使用
    */
   public getEnemyGroup(): Phaser.Physics.Arcade.Group {
     return this.enemyGroup;
   }
 
   /**
-   * 获取当前存活的敌机数量
+   * 获取当前存活的敌机数量，用于判断是否通关
    */
   public getActiveCount(): number {
-    return this.enemyGroup.getTotalActive();
-  }
-
-  /**
-   * 清除当前阵型中所有敌机，为下一波做准备
-   */
-  public clearFormation(): void {
-    // 销毁所有现存敌机
-    this.enemies.forEach(enemy => {
-      if (enemy.active) {
-        enemy.destroy();
-      }
-    });
-    this.enemies = [];
-
-    // 重置移动方向
-    this.direction = 1;
+    return this.enemies.filter(e => e.active).length;
   }
 }
