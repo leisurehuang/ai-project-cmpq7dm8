@@ -4,7 +4,7 @@ import EnemySwarm from '../systems/EnemySwarm';
 import CollisionSystem from '../systems/CollisionSystem';
 import GameManager from '../managers/GameManager';
 import Hud from '../ui/Hud';
-import { Images, Audio } from '../config/AssetKeys';
+import { Audio } from '../config/AssetKeys';
 import { GameSettings } from '../config/GameSettings';
 
 export class MainScene extends Phaser.Scene {
@@ -82,7 +82,7 @@ export class MainScene extends Phaser.Scene {
     const enemy = enemyObj as Phaser.Physics.Arcade.Image;
 
     bullet.destroy(); // 销毁子弹
-    enemy.destroy();  // 销毁敌机 (实际开发中这里调用敌机自身的 die() 方法)
+    enemy.destroy();  // 销毁敌机
 
     // 播放爆炸音效
     this.sound.play(Audio.SFX_EXPLOSION_ENEMY);
@@ -99,47 +99,40 @@ export class MainScene extends Phaser.Scene {
 
     // 扣除生命
     const remainingLives = GameManager.scoreManager.loseLife();
-    this.sound.play(Audio.SFX_EXPLOSION_PLAYER);
+    this.currentLives = remainingLives;
 
     if (remainingLives <= 0) {
-      this.gameOver();
+      this.triggerGameOver();
     } else {
-      // 触发玩家无敌帧闪烁效果
       this.player.triggerInvincibility();
     }
   }
 
   /**
-   * 通关逻辑：敌机全灭后推进关卡、重新生成阵型并提升难度
+   * 进入下一关：重新生成敌机阵列并提升难度
    */
   private nextLevel(): void {
     this.isTransitioning = true;
-
-    // 推进关卡等级
     GameManager.advanceLevel();
 
-    // 清除旧阵型
-    this.enemySwarm.clearFormation();
-
-    // 提升难度并生成新波次
-    this.enemySwarm.increaseDifficulty(GameManager.currentLevel);
-    this.enemySwarm.createFormation();
-
-    // 刷新 HUD 显示（关卡波次由 updateDisplay 内部通过 GameManager.currentLevel 读取）
-    this.hud.updateDisplay(GameManager.scoreManager.getScore(), this.currentLives);
-
-    this.isTransitioning = false;
+    // 短暂延迟后刷新敌机阵型
+    this.time.delayedCall(1500, () => {
+      this.enemySwarm.increaseDifficulty(GameManager.currentLevel);
+      this.enemySwarm.createFormation();
+      this.isTransitioning = false;
+    });
   }
 
   /**
-   * 游戏结束逻辑
+   * 游戏结束：销毁玩家并跳转到结算场景
    */
-  private gameOver(): void {
+  private triggerGameOver(): void {
     this.isGameOver = true;
     this.player.die();
+    this.sound.play(Audio.SFX_EXPLOSION_PLAYER);
 
-    // 延迟切换到游戏结束场景，让玩家看到爆炸效果
-    this.time.delayedCall(1000, () => {
+    // 延迟后切换到 GameOver 场景
+    this.time.delayedCall(2000, () => {
       this.scene.start('GameOverScene');
     });
   }
